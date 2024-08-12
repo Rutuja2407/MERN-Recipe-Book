@@ -1,0 +1,69 @@
+import { Recipe } from "../Models/Recipe.js"
+import { SavedRecipe } from '../Models/SavedRecipe.js'
+
+export const add = async(req,res)=>{
+    const {title,ist,ing1,ing2,ing3,ing4,qty1,qty2,qty3,qty4,imgurl} = req.body;
+
+    try {
+        const recipe = await Recipe.create({title,ist,ing1,ing2,ing3,ing4,qty1,qty2,qty3,qty4,imgurl,user: req.user});
+        res.json ({message:"recipe created succsssfully",recipe})
+    } catch (error) {
+        res.json({message:error})
+    }
+}
+
+//to get the recipe which you have created 
+export const getAllRecipe = async(req,res)=>{
+    const recipe = await Recipe.find();
+    res.json({recipe})
+}
+
+export const getRecipeById = async (req,res)=>{
+    const id = req.params.id
+
+    try {
+        let recipe = await Recipe.findById(id)
+
+        if(!recipe) return res.json({message:"recipe not exist"})
+
+        res.json({message:"recipe by id",recipe})
+
+    } catch (error) {
+         res.json({message:error})
+    }
+
+}
+
+export const getRecipeByUserId = async (req,res)=>{
+    const userId = req.params.id
+
+    try {
+        let recipe = await Recipe.find({user:userId})
+
+        if(!recipe) return res.json({message:"recipe not exist"})
+
+        res.json({message:"recipe by user id",recipe})
+
+    } catch (error) {
+         res.json({message:error})
+    }
+}
+
+export const saveRecipeById = async(req,res)=>{
+    const id = req.params.id
+    
+    let recipe = await SavedRecipe.findOne({recipe:id})
+    
+    if(recipe) return res.json({message:"recipe already saved"})
+   
+    recipe = await SavedRecipe.create({recipe:id})
+
+    res.json({message:"recipe saved successfully"})
+}
+
+export const getSavedRecipe = async (req,res)=>{
+    const recipe = await SavedRecipe.find()
+    res.json({recipe})
+}
+
+
